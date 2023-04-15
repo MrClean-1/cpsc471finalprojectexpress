@@ -162,7 +162,7 @@ class DBConnection {
 			return;
 		}
 
-		await this.makeQuery(`INSERT INTO truck (vin, seats) 
+		await this.makeQuery(`INSERT INTO suv (vin, seats) 
 			VALUES (
 				'${vin}',
 				'${seats}'
@@ -175,7 +175,7 @@ class DBConnection {
 			return;
 		}
 
-		await this.makeQuery(`INSERT INTO truck (vin, doors) 
+		await this.makeQuery(`INSERT INTO car (vin, doors) 
 			VALUES (
 				'${vin}',
 				'${doors}'
@@ -376,13 +376,13 @@ class DBConnection {
 module.exports = DBConnection;
 
 async function test() {
- 	let temp = await DBConnection.getVehicleFromID({vin: 1});
+ 	let temp = await DBConnection.specifyVehicle({vin: 1, type: "car", quality: 4});
  	console.log("the answer:", temp);
 
 	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
 }
 
-//test();
+test();
 
 /*DBConnection.addUser({
 		fName: "john",
