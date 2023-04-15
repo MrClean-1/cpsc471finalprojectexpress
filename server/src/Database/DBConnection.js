@@ -287,6 +287,11 @@ class DBConnection {
 		return await this.makeQuery(query);
 	}
 
+	static async getVehicleFromID({vin}) {
+		let query = `SELECT * FROM vehicle WHERE vin = '${vin}';`;
+		return (await this.makeQuery(query))[0];
+	}
+
 	static async getCurrentAuctionBid({auctionID}) {
 		return (await DBConnection.getAuctionFromID({auctionID: auctionID}))[0].currentBid;
 	}
@@ -353,7 +358,7 @@ class DBConnection {
 module.exports = DBConnection;
 
 async function test() {
- 	let temp = await DBConnection.getUserIDFromUsername({username: "jSmith"});
+ 	let temp = await DBConnection.getVehicleFromID({vin: 1});
  	console.log("the answer:", temp);
 
 	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
