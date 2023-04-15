@@ -126,6 +126,23 @@ class DBConnection {
 			)`);
 	}
 
+	static async addVehicleWithVIN({vin, year, make, model, color, ownerID}) {
+		if (!await DBConnection.verifyUser({userID: ownerID})) {
+			console.log("no owner found");
+			return;
+		}
+
+		await this.makeQuery(`INSERT INTO vehicle (vin, year, make, model, color, ownerID) 
+			VALUES (
+				'${vin}',
+				'${year}',
+				'${make}',
+				'${model}',
+				'${color}',
+				'${ownerID}'
+			)`);
+	}
+
 	static async addTruck({vin, bedLength}) {
 		if (!await DBConnection.verifyVehicle({vin: vin})) {
 			console.log("vehicle not found");
@@ -255,6 +272,11 @@ class DBConnection {
 
 	// // // // // GETTERS // // // // //
 
+	static async getUserIDFromUsername({username}) {
+		let q = `SELECT userID FROM user WHERE username = '${username}';`;
+		return (await DBConnection.makeQuery(q))[0].userID;
+	}
+
 	static async getBidsFromUsername({username}) {
 		let query = `SELECT auctionID, amount FROM bids NATURAL JOIN user WHERE username = '${username}';`;
 		return await this.makeQuery(query);
@@ -330,13 +352,16 @@ class DBConnection {
 
 module.exports = DBConnection;
 
-// async function test() {
-// 	let temp = await DBConnection.getCurrentAuctionBid({auctionID: 1});
-// 	console.log(temp);
+async function test() {
+ 	let temp = await DBConnection.getUserIDFromUsername({username: "jSmith"});
+ 	console.log("the answer:", temp);
 
 	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
+}
 
-	/*DBConnection.addUser({
+ test();
+
+/*DBConnection.addUser({
 		fName: "john",
 		lName: "smith",
 		address: "1 1 1 street",
@@ -390,13 +415,7 @@ module.exports = DBConnection;
 		userID: "2", 
 		amount: "100"
 	});
-*/		
-
-// }
-//
-// test();
-
-
+*/	
 //DBConnection.makeQuery(`SELECT * FROM user;`);
 /*
 let t = DBConnection.verifyUserPassword({
