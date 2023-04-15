@@ -63,7 +63,7 @@ class DBConnection {
 		await this.makeQuery(`INSERT INTO admin (userID) VALUES ('${userID}');`);
 	}
 
-	static async addAuction({startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin}) {
+	static async addAuction({startDate, endDate, minBid, buyOut, currentBid, adminID, vin}) {
 
 		if (!await DBConnection.verifyAdmin({adminID: adminID})) {
 			console.log("admin not found");
@@ -81,7 +81,7 @@ class DBConnection {
 				'${minBid}', 
 				'${buyOut}', 
 				'${currentBid}', 
-				${winnerUserID}, 
+				${null}, 
 				'${adminID}', 
 				'${vin}'
 			);`);

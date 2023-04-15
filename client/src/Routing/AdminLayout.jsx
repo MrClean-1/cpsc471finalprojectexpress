@@ -1,15 +1,18 @@
-import { Navigate, useOutlet } from "react-router-dom";
+import {Navigate, useNavigate, useOutlet} from "react-router-dom";
 import { useAuth} from "../hooks/useAuth";
 import { AppBar } from "./AppBar";
+import {get} from "../common/expressFunctions";
 
 export const AdminLayout = () => {
     const {user} = useAuth();
     const outlet = useOutlet();
-    // const isAdmin = DBConnection.verifyAdmin(user).then(() => {
-    //     if(!isAdmin){
-    //         return <Navigate to="/dashboard"/>;
-    //     }
-    // })
+    const navigate = useNavigate();
+    get("/db/isAdmin", {username: user})
+        .then(response => {
+            if(response){
+                navigate("/dashboard/about", {replace: true});
+            }
+        }).catch(console.error)
 
     if (!user) {
         return <Navigate to="/"/>;

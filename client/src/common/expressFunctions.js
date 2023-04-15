@@ -5,8 +5,8 @@ const request = ( url, params = {}, method = 'GET' ) => {
     } else {
         options = {
             method: "POST",
-            body: params,
-            headers: {"Content-Type": "application/json"}
+            body: JSON.stringify(params),
+            headers: {"content-Type": "application/json"}
         }
     }
 
