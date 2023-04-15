@@ -5,7 +5,6 @@ class DBConnection {
 	static connection;
 
 	static async makeConnection() {
-		console.log("making Connection");
 
 		this.connection = await this.mysql.createConnection({
 			debug: true,
@@ -14,8 +13,6 @@ class DBConnection {
 			password: "password",
 			database: "auctionhouse"
 		});
-
-		console.log("made connection");
 
 		this.connection.connect(function (err) {
 			if (err) {
@@ -26,41 +23,39 @@ class DBConnection {
 	}
 
 	static closeConnection() {
-		if(!this.connection) {
+		if (!this.connection) {
 			return;
 		}
 		this.connection.end();
 	}
 
 	static async makeQuery(query) {
-		console.log("in makeQuery")
-		if(this.connection === undefined) {
+		if (this.connection === undefined) {
 			await this.makeConnection();
 		}
-		console.log("made connection in makeQuery")
 
 		return new Promise((resolve, reject) => {
-            console.log(`Running query: ${query}`);
-            this.connection.query(query, function(err, results, fields) {
-                if(err) {
-                	return reject(err) // rejections are for query errors, network and other failures
-                } else {
-                	return resolve(results, fields); // resolve with query results
-                } 
-                
-            })    
-        })
+			console.log(`Running query: ${query}`);
+			this.connection.query(query, function (err, results, fields) {
+				if (err) {
+					return reject(err) // rejections are for query errors, network and other failures
+				} else {
+					return resolve(results, fields); // resolve with query results
+				}
+
+			})
+		})
 	}
 
-	// add user to database with their: firstname, lastname, address, card number, userName, password
-	static async addUser({fName, lName, address, cardNumber, userName, password}) {
-		await this.makeQuery(`INSERT INTO user (fName, lName, address, cardNumber, userName, password) 
-			VALUES ('${fName}', '${lName}', '${address}', '${cardNumber}', '${userName}', '${password}');`);
+	// add user to database with their: firstname, lastname, address, card number, username, password
+	static async addUser({fName, lName, address, cardNumber, username, password}) {
+		await this.makeQuery(`INSERT INTO user (fName, lName, address, cardNumber, username, password) 
+			VALUES ('${fName}', '${lName}', '${address}', '${cardNumber}', '${username}', '${password}');`);
 	}
 
 	static async addAdmin({userID}) {
 
-		if(!await DBConnection.verifyUser({userID: userID})) {
+		if (!await DBConnection.verifyUser({userID: userID})) {
 			console.log("userID Not Found");
 			return;
 		}
@@ -70,11 +65,11 @@ class DBConnection {
 
 	static async addAuction({startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin}) {
 
-		if(!await DBConnection.verifyAdmin({adminID: adminID})) {
+		if (!await DBConnection.verifyAdmin({adminID: adminID})) {
 			console.log("admin not found");
 			return;
-		}	
-		if(!await DBConnection.verifyVehicle({vin: vin})) {
+		}
+		if (!await DBConnection.verifyVehicle({vin: vin})) {
 			console.log("vehicle not found");
 			return;
 		}
@@ -90,19 +85,19 @@ class DBConnection {
 				'${adminID}', 
 				'${vin}'
 			);`);
-			
+
 	}
 
 	// // // // // INSERT TO DATABASE FUNCTIONS // // // // // 
 
 	// insert new bid using auctionID, userID, amount
 	static async addBid({auctionID, userID, amount}) {
-		
-		if(!await DBConnection.verifyAuction({auctionID: auctionID})) {
+
+		if (!await DBConnection.verifyAuction({auctionID: auctionID})) {
 			console.log("auction not found");
 			return;
 		}
-		if(!await DBConnection.verifyUser({userID: userID})) {
+		if (!await DBConnection.verifyUser({userID: userID})) {
 			console.log("user Not found");
 			return;
 		}
@@ -116,7 +111,7 @@ class DBConnection {
 	}
 
 	static async addVehicle({year, make, model, color, ownerID}) {
-		if(!await DBConnection.verifyUser({userID: ownerID})) {
+		if (!await DBConnection.verifyUser({userID: ownerID})) {
 			console.log("no owner found");
 			return;
 		}
@@ -132,7 +127,7 @@ class DBConnection {
 	}
 
 	static async addTruck({vin, bedLength}) {
-		if(!await DBConnection.verifyVehicle({vin: vin})) {
+		if (!await DBConnection.verifyVehicle({vin: vin})) {
 			console.log("vehicle not found");
 			return;
 		}
@@ -145,7 +140,7 @@ class DBConnection {
 	}
 
 	static async addSUV({vin, seats}) {
-		if(!await DBConnection.verifyVehicle({vin: vin})) {
+		if (!await DBConnection.verifyVehicle({vin: vin})) {
 			console.log("vehicle not found");
 			return;
 		}
@@ -158,7 +153,7 @@ class DBConnection {
 	}
 
 	static async addCar({vin, doors}) {
-		if(!await DBConnection.verifyVehicle({vin: vin})) {
+		if (!await DBConnection.verifyVehicle({vin: vin})) {
 			console.log("vehicle not found");
 			return;
 		}
@@ -204,10 +199,10 @@ class DBConnection {
 	static async verifyAuctionIsOpen(auctionObject) {
 		let startDate = new Date(auctionObject.startDate).getTime();
 		let endDate = new Date(auctionObject.endDate).getTime();
-		
+
 		let today = new Date().getTime();
 
-		if(startDate <= today && endDate >= today) {
+		if (startDate <= today && endDate >= today) {
 			return true;
 		}
 		return false;
@@ -216,35 +211,37 @@ class DBConnection {
 	// return 0 if no user
 	// 	      1 if user
 	//		 -1 if admin
-	static async verifyUserPassword({userName, pass}) {
+	static async verifyUserPassword({username, password}) {
 		console.log('verifying password');
 
-		let res = await this.makeQuery(`SELECT userName, password, userID FROM USER WHERE userName = '${userName}';`);
+		let res = await this.makeQuery(`SELECT username, password, userID FROM USER WHERE username = '${username}';`);
 
 		console.log('Past query')
-		if(res.length === 0) { // if no usernames found
+		if (res.length === 0) { // if no usernames found
 			return 0;
 		}
 
 		let validPass = false;
 		let isAdmin = false;
 
-		for(let row = 0; row < res.length; row++) {
+		for (let row = 0; row < res.length; row++) {
+			console.log("CHECKING IF PASSWORD IS VALID!!! " + res[row].password + " =? " + password)
 
-			if(res[row].password === pass) {
+			if (res[row].password === password) {
 				validPass = true;
+				console.log("PASSWORD VALID!!! " + res[row].password)
 			}
-			if(await this.verifyUserIsAdmin({userID: res[row].userID})) {
+			if (await this.verifyUserIsAdmin({userID: res[row].userID})) {
 				isAdmin = true;
 			}
 		}
 
-		if(!validPass) { // if no passwords match
+		if (!validPass) { // if no passwords match
 			console.log("password Invalid")
 			return 0;
 		}
 
-		if(isAdmin) {
+		if (isAdmin) {
 			console.log("isAdmin")
 			return -1;
 		}
@@ -258,7 +255,7 @@ class DBConnection {
 
 	// // // // // GETTERS // // // // //
 
-	static async getBidsFromUserName({username}) {
+	static async getBidsFromUsername({username}) {
 		let query = `SELECT auctionID, amount FROM bids NATURAL JOIN user WHERE username = '${username}';`;
 		return await this.makeQuery(query);
 	}
@@ -277,12 +274,12 @@ class DBConnection {
 		return await this.makeQuery(query);
 	}
 
- 	// return all open auction in list
+	// return all open auction in list
 	static async getCurrentAuctions() {
 		let allAuctions = await DBConnection.getAllAuctions();
 		let currentAuctions = [];
-		for(let i = 0; i < allAuctions.length; i++) {
-			if(await DBConnection.verifyAuctionIsOpen(allAuctions[i])) {
+		for (let i = 0; i < allAuctions.length; i++) {
+			if (await DBConnection.verifyAuctionIsOpen(allAuctions[i])) {
 				currentAuctions.push(allAuctions[i]);
 			}
 		}
@@ -291,7 +288,7 @@ class DBConnection {
 
 	// type either: truck/suv/car (tolower)
 	static async getAuctionByVehicleType({type}) {
-		if(!type in ["truck", "suv", "car"]) {
+		if (!type in ["truck", "suv", "car"]) {
 
 		}
 	}
@@ -309,15 +306,15 @@ class DBConnection {
 
 	static async placeBid({auctionID, userID, amount}) {
 		let auction = await DBConnection.getAuctionFromID({auctionID: auctionID});
-		
-		if(!await DBConnection.verifyAuctionIsOpen(auction)) {
-			console.log("this acution is closed");
+
+		if (!await DBConnection.verifyAuctionIsOpen(auction)) {
+			console.log("this action is closed");
 			return;
 		}
 
 		let currentBid = await DBConnection.getCurrentAuctionBid({auctionID: auctionID});
 
-		if(currentBid < amount) {
+		if (currentBid < amount) {
 			console.log("this bid is too low");
 			return;
 		}
@@ -325,14 +322,13 @@ class DBConnection {
 		// add bid to database
 		await DBConnection.addBid({auctionID: auctionID, userID: userID, amount: amount});
 
-		// update current auction to have highest bid
+		// update current auction to have the highest bid
 		await DBConnection.setAuctionBid({auctionID: auctionID, amount: amount});
 
 	}
 }
 
-export default DBConnection;
-
+module.exports = DBConnection;
 
 // async function test() {
 // 	let temp = await DBConnection.getCurrentAuctionBid({auctionID: 1});
@@ -345,7 +341,7 @@ export default DBConnection;
 		lName: "smith",
 		address: "1 1 1 street",
 		cardNumber: "1234",
-		userName: "jSmith",
+		username: "jSmith",
 		password: "pass"
 	})
 
@@ -354,7 +350,7 @@ export default DBConnection;
 		lName: "smith",
 		address: "222 street",
 		cardNumber: "1234",
-		userName: "jSmith",
+		username: "jSmith",
 		password: "pass"
 	})
 
@@ -363,7 +359,7 @@ export default DBConnection;
 		lName: "smith",
 		address: "333 street",
 		cardNumber: "1234",
-		userName: "jSmith",
+		username: "jSmith",
 		password: "pass"
 	})
 
@@ -404,7 +400,7 @@ export default DBConnection;
 //DBConnection.makeQuery(`SELECT * FROM user;`);
 /*
 let t = DBConnection.verifyUserPassword({
-	userName: "jsmith",
+	username: "jsmith",
 	pass: "pass"
 })
 
@@ -421,7 +417,7 @@ DBConnection.addUser({
 	lName: "smith",
 	address: "1 1 1 street",
 	cardNumber: "1234",
-	userName: "jSmith",
+	username: "jSmith",
 	password: "pass"
 	
 });

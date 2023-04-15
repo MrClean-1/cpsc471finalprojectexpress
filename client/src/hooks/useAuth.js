@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
+import { get, post } from "../common/expressFunctions"
 
 const AuthContext = createContext(undefined);
 
@@ -13,19 +14,19 @@ export const AuthProvider = ({ children, userData }) => {
         // Make this function work like it should with DB methods
         // ---
 
-        setUser(data.username);
-        navigate("/dashboard/about", { replace: true });
-
-        // if(await DBConnection.verifyUserPassword([data.username, data.password]) === 1){ // If user exists in our database and the credentials pass
-        //     setUser(data.username);
-        //     navigate("/dashboard/about", { replace: true });
-        // }else if (await DBConnection.verifyUserPassword([data.username, data.password]) === -1) { // If user exists in our database and the credentials pass
-        //     setUser(data.username);
-        //     navigate("/admin/about", {replace: true});
-        // }else {
-        //     setUser(null);
-        //     alert("Incorrect Username or Password")
-        // }
+        get("/db/login", data)
+            .then(response => {
+                if (response === -1){
+                    setUser(data.username);
+                    navigate("/admin/about", {replace: true});
+                }else if (response === 1){
+                    setUser(data.username);
+                    navigate("/dashboard/about", { replace: true });
+                }else{
+                    setUser(null);
+                    alert("Incorrect Username or Password")
+                }
+            }).catch(console.error)
     };
 
     const register = async (data) => {
@@ -34,9 +35,14 @@ export const AuthProvider = ({ children, userData }) => {
         // ---
         // await FunctionThatAddsUser(await data.username, await data.password)
         // console.log("done waiting for addUser()")
-        //await DBConnection.addUser([data.fName, data.lName, data.address, data.cardNumber, data.username, data.password])
+
+        console.log(data);
+
+        await post("/db/register", data)
+            .catch(console.error)
         setUser(data.username);
         navigate("/dashboard/about", { replace: true });
+
     };
 
     const logout = () => {

@@ -1,21 +1,30 @@
 const express = require('express');
 const path = require('path');
+const DBConnection = require('./src/Database/DBConnection')
+const bodyParser = require('body-parser')
 
 const app = express();
 
-// Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+// // Serve the static files from the React app
+// app.use(express.static('../client/build'));
 
-// An api endpoint that returns a short list of items
-app.get('/api/getList', (req,res) => {
-    const list = ["item1", "item2", "item3"];
-    res.json(list);
-    console.log('Sent list of items');
+// Using bodyParser middleware
+app.use(express.json())
+
+// API endpoints start here
+app.get('/db/login', async (req,res) => {
+    const {username, password} = req.query;
+    res.json(await DBConnection.verifyUserPassword({username, password}));
+});
+
+app.post('/db/register', async (req,res) => {
+    const { username, password, fName, lName, address, cardNumber} = req.body;
+    res.json(await DBConnection.addUser({fName, lName, address, cardNumber, username, password}));
 });
 
 // Handles any requests that don't match the ones above
 app.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname+'/client/build/index.html'));
+    console.log("bad request URL")
 });
 
 const port = process.env.PORT || 5000;
