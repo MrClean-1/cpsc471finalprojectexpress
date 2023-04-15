@@ -5,6 +5,8 @@ import {Component} from "react";
 import { get } from "../common/expressFunctions"
 import {Link} from "react-router-dom";
 import Auction from "./Auction";
+import {AuctionModel} from "../models/AuctionModel";
+import {VehicleModel} from "../models/VehicleModel";
 
 //TODO
 // Not 100% sure what I need for this yet
@@ -40,13 +42,21 @@ export class SearchAuctionsPage extends Component {
 
     async componentDidMount() {
         const {updateLocalState} = this;
-        const auctionList = JSON.parse(await get("/db/getAllAuctions"));
-        for (let auctionID = 0; auctionID < auctionList.length; auctionID++){
-
+        const auctionList = await get("/db/getAllAuctions");
+        let auctionObjects = [];
+        for (let auctionIndex = 0; auctionIndex < auctionList.length; auctionIndex++){
+            console.log(auctionList[auctionIndex])
+            const {auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin}
+                = JSON.parse(auctionList[auctionIndex]);
+            const {year, make, model, color, ownerID} = await get("'/db/getVehicle", {vin})
+            auctionObjects.push(
+                new AuctionModel(auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin,
+                new VehicleModel(vin, year, make, model, color, ownerID)))
         }
+        console.log(auctionObjects)
         this.setState({
             didMount: true
-        });updateLocalState(auctionList);
+        });updateLocalState(auctionObjects);
     }
 
     updateLocalState(auctionList) {
@@ -71,7 +81,7 @@ export class SearchAuctionsPage extends Component {
                     <h2>Please view our auctions below</h2>
                     {this.state.auctions.map((auction, idx) => {
                         return (
-                            <Link key={idx} to={`${auction.documentID}`}
+                            <Link key={idx} to={`${auction.auctionID}`}
                                   style={{color: 'inherit', textDecoration: 'inherit'}}>
                                 <Auction key={idx} auction={auction}/>
                             </Link>

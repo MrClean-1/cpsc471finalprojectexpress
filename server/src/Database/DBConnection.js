@@ -357,14 +357,14 @@ class DBConnection {
 
 module.exports = DBConnection;
 
-async function test() {
- 	let temp = await DBConnection.getVehicleFromID({vin: 1});
- 	console.log("the answer:", temp);
-
-	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
-}
-
-//test();
+// async function test() {
+//  	let temp = await DBConnection.getUserIDFromUsername({username: "jSmith"});
+//  	console.log("the answer:", temp);
+//
+// 	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
+// }
+//
+//  test();
 
 /*DBConnection.addUser({
 		fName: "john",

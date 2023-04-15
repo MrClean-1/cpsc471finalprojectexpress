@@ -14,7 +14,7 @@ app.use(express.json())
 // API endpoints start here
 app.get('/db/login', async (req,res) => {
     const {username, password} = req.query;
-    res.json(await DBConnection.verifyUserPassword({username, password}));
+    res.json(JSON.stringify(await DBConnection.verifyUserPassword({username, password})));
 });
 
 app.post('/db/register', async (req,res) => {
@@ -31,14 +31,26 @@ app.get('/db/isAdmin', async (req,res) => {
 app.post('/db/addAuction', async (req,res) => {
     const {startDate, endDate, minBid, buyOut, currentBid, adminID, vin, year, make, model, color, ownerID} = req.body;
     console.log(req.body)
-    await DBConnection.addVehicle({year, make, model, color, ownerID})
+    await DBConnection.addVehicleWithVIN({vin, year, make, model, color, ownerID})
     res.json(await DBConnection.addAuction(
         {startDate, endDate, minBid, buyOut, currentBid, adminID, vin}));
 });
 
 app.get('/db/getAllAuctions', async (req,res) => {
-    await DBConnection.addAdmin({userID: "3"})
-    res.json(await DBConnection.getAllAuctions());
+    const allAuctions = await DBConnection.getAllAuctions()
+    let auctionJSON = [];
+    for (let auctionIndex = 0; auctionIndex < allAuctions.length; auctionIndex++){
+        auctionJSON.push(JSON.stringify(allAuctions[auctionIndex]));
+    }res.json(auctionJSON);
+});
+
+app.get('/db/getVehicle', async (req,res) => {
+    const {vehicle} = req.query;
+    const allAuctions = await DBConnection.getAllAuctions()
+    let auctionJSON = [];
+    for (let auctionIndex = 0; auctionIndex < allAuctions.length; auctionIndex++){
+        auctionJSON.push(JSON.stringify(allAuctions[auctionIndex]));
+    }res.json(auctionJSON);
 });
 
 // Handles any requests that don't match the ones above

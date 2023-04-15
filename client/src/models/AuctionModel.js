@@ -1,5 +1,5 @@
 export class AuctionModel {
-    constructor(auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin) {
+    constructor(auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin, vehicle) {
         this.auctionID = auctionID
         this.startDate = startDate
         this.endDate= endDate
@@ -9,5 +9,6 @@ export class AuctionModel {
         this.winnerUserID = winnerUserID
         this.adminID = adminID
         this.vin = vin
+        this.vehicle = vehicle
     }
 }
