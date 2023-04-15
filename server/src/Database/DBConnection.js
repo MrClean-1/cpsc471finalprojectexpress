@@ -162,7 +162,7 @@ class DBConnection {
 			return;
 		}
 
-		await this.makeQuery(`INSERT INTO truck (vin, seats) 
+		await this.makeQuery(`INSERT INTO suv (vin, seats) 
 			VALUES (
 				'${vin}',
 				'${seats}'
@@ -175,7 +175,7 @@ class DBConnection {
 			return;
 		}
 
-		await this.makeQuery(`INSERT INTO truck (vin, doors) 
+		await this.makeQuery(`INSERT INTO car (vin, doors) 
 			VALUES (
 				'${vin}',
 				'${doors}'
@@ -375,6 +375,7 @@ class DBConnection {
 
 module.exports = DBConnection;
 
+<<<<<<< HEAD
 // async function test() {
 //  	let temp = await DBConnection.getUserIDFromUsername({username: "jSmith"});
 //  	console.log("the answer:", temp);
@@ -383,6 +384,16 @@ module.exports = DBConnection;
 // }
 //
 //  test();
+=======
+async function test() {
+ 	let temp = await DBConnection.specifyVehicle({vin: 1, type: "car", quality: 4});
+ 	console.log("the answer:", temp);
+
+	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
+}
+
+//test();
+>>>>>>> master
 
 /*DBConnection.addUser({
 		fName: "john",
