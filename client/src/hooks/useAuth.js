@@ -16,10 +16,10 @@ export const AuthProvider = ({ children, userData }) => {
 
         get("/db/login", data)
             .then(response => {
-                if (response === -1){
+                if (response === "-1"){
                     setUser(data.username);
                     navigate("/admin/about", {replace: true});
-                }else if (response === 1){
+                }else if (response === "1"){
                     setUser(data.username);
                     navigate("/dashboard/about", { replace: true });
                 }else{

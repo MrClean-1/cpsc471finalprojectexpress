@@ -35,7 +35,7 @@ class DBConnection {
 		}
 
 		return new Promise((resolve, reject) => {
-			console.log(`Running query: ${query}`);
+			//console.log(`Running query: ${query}`);
 			this.connection.query(query, function (err, results, fields) {
 				if (err) {
 					return reject(err) // rejections are for query errors, network and other failures
@@ -91,13 +91,13 @@ class DBConnection {
 	// // // // // INSERT TO DATABASE FUNCTIONS // // // // // 
 
 	// insert new bid using auctionID, userID, amount
-	static async addBid({auctionID, userID, amount}) {
-
+	static async addBid({auctionID, username, amount}) {
+		const userID = {userID: await DBConnection.getUserIDFromUsername({username: username})}
 		if (!await DBConnection.verifyAuction({auctionID: auctionID})) {
 			console.log("auction not found");
 			return;
 		}
-		if (!await DBConnection.verifyUser({userID: userID})) {
+		if (!await DBConnection.verifyUser({userID})) {
 			console.log("user Not found");
 			return;
 		}
@@ -108,6 +108,7 @@ class DBConnection {
 				'${userID}',
 				'${amount}'
 			)`);
+		console.log("Bid added")
 	}
 
 	static async addVehicle({year, make, model, color, ownerID}) {
@@ -242,11 +243,11 @@ class DBConnection {
 		let isAdmin = false;
 
 		for (let row = 0; row < res.length; row++) {
-			console.log("CHECKING IF PASSWORD IS VALID!!! " + res[row].password + " =? " + password)
+			//console.log("CHECKING IF PASSWORD IS VALID!!! " + res[row].password + " =? " + password)
 
 			if (res[row].password === password) {
 				validPass = true;
-				console.log("PASSWORD VALID!!! " + res[row].password)
+				//console.log("PASSWORD VALID!!! " + res[row].password)
 			}
 			if (await this.verifyUserIsAdmin({userID: res[row].userID})) {
 				isAdmin = true;
@@ -274,7 +275,7 @@ class DBConnection {
 
 	static async getUserIDFromUsername({username}) {
 		let q = `SELECT userID FROM user WHERE username = '${username}';`;
-		return (await DBConnection.makeQuery(q))[0].userID;
+		return (await DBConnection.makeQuery(q))[0];
 	}
 
 	static async getBidsFromUsername({username}) {
@@ -375,7 +376,7 @@ class DBConnection {
 
 module.exports = DBConnection;
 
-<<<<<<< HEAD
+
 // async function test() {
 //  	let temp = await DBConnection.getUserIDFromUsername({username: "jSmith"});
 //  	console.log("the answer:", temp);
@@ -384,7 +385,7 @@ module.exports = DBConnection;
 // }
 //
 //  test();
-=======
+
 async function test() {
  	let temp = await DBConnection.specifyVehicle({vin: 1, type: "car", quality: 4});
  	console.log("the answer:", temp);
@@ -393,7 +394,6 @@ async function test() {
 }
 
 //test();
->>>>>>> master
 
 /*DBConnection.addUser({
 		fName: "john",

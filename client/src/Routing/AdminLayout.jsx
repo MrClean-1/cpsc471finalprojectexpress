@@ -9,7 +9,7 @@ export const AdminLayout = () => {
     const navigate = useNavigate();
     get("/db/isAdmin", {username: user})
         .then(response => {
-            if(response){
+            if(response === "false"){
                 navigate("/dashboard/about", {replace: true});
             }
         }).catch(console.error)

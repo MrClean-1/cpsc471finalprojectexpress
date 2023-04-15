@@ -9,7 +9,7 @@ export const ProtectedLayout = () => {
     const navigate = useNavigate();
     get("/db/isAdmin", {username: user})
         .then(response => {
-        if(response){
+        if(response !== "false"){
             navigate("/admin/about", {replace: true});
         }
     }).catch(console.error)

@@ -1,6 +1,4 @@
-import Container from "@mui/material/Container";
 import * as React from "react";
-import Box from "@mui/material/Box";
 import {Component} from "react";
 import { get } from "../common/expressFunctions"
 import {Link} from "react-router-dom";
@@ -48,12 +46,11 @@ export class SearchAuctionsPage extends Component {
             console.log(auctionList[auctionIndex])
             const {auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin}
                 = JSON.parse(auctionList[auctionIndex]);
-            const {year, make, model, color, ownerID} = await get("'/db/getVehicle", {vin})
+            const {year, make, model, color, ownerID} = await get("/db/getVehicle", {vin})
             auctionObjects.push(
                 new AuctionModel(auctionID, startDate, endDate, minBid, buyOut, currentBid, winnerUserID, adminID, vin,
                 new VehicleModel(vin, year, make, model, color, ownerID)))
         }
-        console.log(auctionObjects)
         this.setState({
             didMount: true
         });updateLocalState(auctionObjects);
@@ -69,26 +66,17 @@ export class SearchAuctionsPage extends Component {
             return <h2>Loading Auctions...</h2>;
         }
         return (
-            <Container component="main" maxWidth="xs">
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center"
-                    }}
-                >
-                    <h2>Please view our auctions below</h2>
-                    {this.state.auctions.map((auction, idx) => {
-                        return (
-                            <Link key={idx} to={`${auction.auctionID}`}
-                                  style={{color: 'inherit', textDecoration: 'inherit'}}>
-                                <Auction key={idx} auction={auction}/>
-                            </Link>
-                        )
-                    })}
-                </Box>
-            </Container>
+            <div>
+                <h1 style={{margin: '1em 18%'}}>Click on an Auction to view it</h1>
+                {this.state.auctions.map((auction, idx) => {
+                    return (
+                        <Link key={idx} to={`${auction.auctionID}`}
+                              style={{color: 'inherit', textDecoration: 'inherit'}}>
+                            <Auction key={idx} auction={auction}/>
+                        </Link>
+                    )
+                })}
+            </div>
         )
     }
 }

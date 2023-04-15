@@ -1,7 +1,5 @@
 const express = require('express');
-const path = require('path');
 const DBConnection = require('./src/Database/DBConnection')
-const bodyParser = require('body-parser')
 
 const app = express();
 
@@ -25,15 +23,20 @@ app.post('/db/register', async (req,res) => {
 
 app.get('/db/isAdmin', async (req,res) => {
     const {username} = req.query;
-    res.json(await DBConnection.verifyAdmin({username}));
+    res.json(await DBConnection.verifyAdmin({adminID: await DBConnection.getUserIDFromUsername({username})}));
 });
 
 app.post('/db/addAuction', async (req,res) => {
     const {startDate, endDate, minBid, buyOut, currentBid, adminID, vin, year, make, model, color, ownerID} = req.body;
-    console.log(req.body)
     await DBConnection.addVehicleWithVIN({vin, year, make, model, color, ownerID})
     res.json(await DBConnection.addAuction(
         {startDate, endDate, minBid, buyOut, currentBid, adminID, vin}));
+});
+
+app.post('/db/addBid', async (req,res) => {
+    const {auctionID, username, amount} = req.body;
+    res.json(await DBConnection.addBid(
+        {auctionID, username, amount}));
 });
 
 app.get('/db/getAllAuctions', async (req,res) => {
@@ -44,13 +47,16 @@ app.get('/db/getAllAuctions', async (req,res) => {
     }res.json(auctionJSON);
 });
 
+app.get('/db/getAuction', async (req,res) => {
+    const {auctionID} = req.query;
+    const auction = await DBConnection.getAuctionFromID({auctionID})
+    res.json(auction[0]);
+});
+
 app.get('/db/getVehicle', async (req,res) => {
-    const {vehicle} = req.query;
-    const allAuctions = await DBConnection.getAllAuctions()
-    let auctionJSON = [];
-    for (let auctionIndex = 0; auctionIndex < allAuctions.length; auctionIndex++){
-        auctionJSON.push(JSON.stringify(allAuctions[auctionIndex]));
-    }res.json(auctionJSON);
+    const {vin} = req.query;
+    const vehicle = await DBConnection.getVehicleFromID({vin})
+    res.json(vehicle);
 });
 
 // Handles any requests that don't match the ones above

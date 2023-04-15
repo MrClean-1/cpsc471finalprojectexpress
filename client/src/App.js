@@ -11,6 +11,7 @@ import {AdminLayout} from "./Routing/AdminLayout";
 import {SearchAuctionsPage} from "./Pages/SearchAuctionsPage";
 import {UsersBidsPage} from "./Pages/UsersBidsPage";
 import {CreateAuctionPage} from "./Pages/CreateAuctionPage";
+import SingleAuctionView from "./Pages/SingleAuctionView";
 
 //TODO
 // add search page
@@ -40,6 +41,7 @@ export const router = createBrowserRouter(
           <Route path="/dashboard" element={<ProtectedLayout />}>
               <Route path="about" element={<LandingPage />} />
               <Route path="search" element={<SearchAuctionsPage />} />
+              <Route path="search/:auctionID" element={<SingleAuctionView />} />
               <Route path="bids" element={<UsersBidsPage />} />
 
           </Route>
@@ -47,6 +49,7 @@ export const router = createBrowserRouter(
                 <Route path="about" element={<LandingPage />} />
                 <Route path="search" element={<SearchAuctionsPage />} />
                 <Route path="create" element={<CreateAuctionPage />} />
+                <Route path="search/:auctionID" element={<SingleAuctionView />} />
                 <Route path="bids" element={<UsersBidsPage />} />
             </Route>
         </Route>
