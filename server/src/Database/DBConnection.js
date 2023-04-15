@@ -353,6 +353,24 @@ class DBConnection {
 		await DBConnection.setAuctionBid({auctionID: auctionID, amount: amount});
 
 	}
+
+	// type either truck, suv, car
+	// quality is either bedLength, seats, doors
+	static async specifyVehicle({vin, type, quality}) {
+		if (!await DBConnection.verifyVehicle({vin: vin})) {
+			console.log("vehicle not found");
+			return;
+		}
+
+		if(type === "truck") {
+			await DBConnection.addTruck({vin: vin, bedLength: quality});
+		} else if(type === "suv") {
+			await DBConnection.addSUV({vin: vin, seats: quality});
+		} else if(type === "car") {
+			await DBConnection.addCar({vin: vin, doors: quality});
+		}
+
+	}
 }
 
 module.exports = DBConnection;
