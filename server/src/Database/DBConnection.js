@@ -359,7 +359,7 @@ async function test() {
 	//console.log(await DBConnection.verifyAuctionIsOpen(temp[0]));
 }
 
- test();
+//test();
 
 /*DBConnection.addUser({
 		fName: "john",
